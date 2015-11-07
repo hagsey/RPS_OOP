@@ -2,12 +2,13 @@ class Player
   attr_accessor :choice
   attr_reader :name
 
-  def initialize(n)
-    @name = n
+  def initialize(name)
+    @name = name
   end
 
-  def to_s
-    "#{name} chose #{Game::HANDS.fetch(choice)}"
+  def show_hand
+    puts "#{name} chose #{Game::HANDS[choice]}"
+    sleep 1
   end
 end
 
@@ -22,9 +23,9 @@ class Human < Player
   def select_hand
     begin
       puts "Choose one: (R/P/S)"
-      c = gets.chomp.upcase
-    end until Game::HANDS.keys.include?(c)
-   self.choice = c
+      human_choice = gets.chomp.upcase
+    end until Game::HANDS.keys.include?(human_choice)
+   self.choice = human_choice
   end
 end
 
@@ -70,21 +71,25 @@ class Game
     end
   end
 
-  def play
+  def welcome_message
     sleep 1
     puts "Welcome #{player.name}, let's play Rock, Paper, Scissors!"
+  end
+
+  def play_again
+    puts "Play again? (Y/N)"
+    gets.chomp.upcase == 'Y'
+  end
+
+  def play
+    welcome_message
     loop do
       player.select_hand
       computer.select_hand
-      puts player
-      sleep 1
-      puts computer
-      sleep 1
+      player.show_hand
+      computer.show_hand
       compare_hands
-      sleep 1
-      puts "Play again? (Y/N)"
-      play_again = gets.chomp.upcase
-      break unless play_again == 'Y'
+      break unless play_again
     end
   end
 end
