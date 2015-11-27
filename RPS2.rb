@@ -22,16 +22,21 @@ end
 class Player
   include Score
 
-  attr_accessor :name, :choice
+  attr_accessor :name, :choice, :hand_history
 
   def initialize
     set_name
     reset_score
+    @hand_history = []
     super
   end
 
   def show_hand
     puts "#{name} went with #{Game::CHOICES[choice]}."
+  end
+
+  def show_hand_history
+    puts "#{name} hand history: #{hand_history.join(', ')}"
   end
 end
 
@@ -51,7 +56,8 @@ class Human < Player
     puts "Choose either rock (R), paper (P), or scissors (S)."
     human_choice = gets.chomp.upcase
     end until Game::CHOICES.keys.include?(human_choice)
-    self.choice = human_choice  
+    self.choice = human_choice 
+    @hand_history << human_choice 
   end 
 end
 
@@ -61,7 +67,9 @@ class Computer < Player
   end
 
   def select_hand
-    self.choice = Game::CHOICES.keys.sample
+    computer_choice = Game::CHOICES.keys.sample
+    self.choice = computer_choice
+    @hand_history << computer_choice
   end
 end
 
@@ -111,10 +119,10 @@ class Game
 
 
   def check_winner
-    if human.score == 2
+    if human.score == 3
       puts "#{human.name} wins the game!"
       reset_game
-    elsif computer.score == 2
+    elsif computer.score == 3
       puts "#{computer.name} wins the game :("
       reset_game
     end      
@@ -129,6 +137,8 @@ class Game
     welcome_message
     loop do
       system 'Clear'
+      human.show_hand_history
+      computer.show_hand_history
       human.select_hand
       computer.select_hand
       human.show_hand
