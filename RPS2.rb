@@ -1,4 +1,4 @@
-class Score
+module Score
   attr_accessor :score
 
   def initialize
@@ -6,20 +6,28 @@ class Score
   end
 
   def show_score
-    puts "#{name} score: #{@score}"
+    puts "#{name} score: #{score}"
+  end
+
+  def reset_score
+    self.score = 0
   end
 
   def add_point
-    @score += 1
+    self.score += 1
   end
 end
 
 
-class Player < Score
+class Player
+  include Score
+
   attr_accessor :name, :choice
 
   def initialize
     set_name
+    reset_score
+    super
   end
 
   def show_hand
@@ -96,6 +104,22 @@ class Game
     gets.chomp.upcase == 'Y' 
   end
 
+  def reset_game
+    human.reset_score
+    computer.reset_score
+  end
+
+
+  def check_winner
+    if human.score == 2
+      puts "#{human.name} wins the game!"
+      reset_game
+    elsif computer.score == 2
+      puts "#{computer.name} wins the game :("
+      reset_game
+    end      
+  end
+
   def show_scoreboard
     human.show_score
     computer.show_score
@@ -111,6 +135,7 @@ class Game
       computer.show_hand
       compare_choices
       show_scoreboard
+      check_winner
       break unless play_again
     end
     exit_message
